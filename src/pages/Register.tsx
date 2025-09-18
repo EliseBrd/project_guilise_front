@@ -1,6 +1,8 @@
-import { useState } from "react";
+import {useState} from "react";
 import "./Register.scss";
 import Logo from "../assets/logo.svg";
+import EyeOpen from "../assets/eye.svg";
+import EyeClosed from "../assets/eye-closed.svg";
 
 export default function Register() {
     const [lastname, setLastname] = useState("");
@@ -8,7 +10,7 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [entropy, setEntropy] = useState<number | null>(null);
-    const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     // Fonction pour calculer l'entropie
     function calculerEntropie(chaine: string): number {
@@ -45,14 +47,15 @@ export default function Register() {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        if (entropy !== null && entropy < 2) {
-            setError("❌ Mot de passe trop faible !");
-            return;
-        }
-
-        setError("");
-        console.log("Formulaire envoyé :", { email, password });
+        console.log("Formulaire envoyé :", {email, password});
         // TODO: appeler le backend pour envoyer l'inscription
+    }
+
+    function getPasswordStrength(entropy: number): { level: string, color: string } {
+        if (entropy < 2) return {level: "Faible", color: "red"};
+        if (entropy < 3.5) return {level: "Moyen", color: "orange"};
+        if (entropy < 4.5) return {level: "Bon", color: "green"};
+        return {level: "Excellent", color: "darkgreen"};
     }
 
     return (
@@ -63,34 +66,33 @@ export default function Register() {
             </div>
             <div className="right">
                 <h2>Create an account</h2>
-                <div>
+                <div className="alreadyAccount">
                     <p>Already have an account ?</p>
-                    <button>test</button>
+                    <a className="link">Log in</a>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <div>
-                        <div className="inputFirstname">
-                            <label>Nom</label>
-                            <input
-                                type="text"
-                                value={lastname}
-                                onChange={(e) => setLastname(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="inputLastname">
-                            <label>Prénom</label>
-                            <input
-                                type="text"
-                                value={firstname}
-                                onChange={(e) => setFirstname(e.target.value)}
-                                required
-                            />
-                        </div>
+                    <div className="nameFields">
+                        <input
+                            className="inputFirstname"
+                            placeholder="Lastname"
+                            type="text"
+                            value={lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                            required
+                        />
+                        <input
+                            className="inputLastname"
+                            placeholder="Firstname"
+                            type="text"
+                            value={firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                            required
+                        />
                     </div>
                     <div className="inputMail">
-                        <label>Email</label>
                         <input
+                            className="email"
+                            placeholder="Email"
                             type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -98,23 +100,45 @@ export default function Register() {
                         />
                     </div>
 
+                    <div className="passwordField">
+                        <div className="passwordInput">
+                            <input
+                                className="password"
+                                placeholder="Password"
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={handlePasswordChange}
+                                required
+                            />
 
-                    <div>
-                        <label>Mot de passe :</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
-                        />
+                            <img
+                                src={showPassword ? EyeOpen : EyeClosed}
+                                alt="Toggle password visibility"
+                                className="eye-icon"
+                                onClick={() => setShowPassword(!showPassword)}
+                            />
+                        </div>
+
+
                         {entropy !== null && (
-                            <p>🔑 Entropie : {entropy.toFixed(2)} bits</p>
+                            <div className="strengthMeter">
+                                <div
+                                    className="strengthBar"
+                                    style={{
+                                        width: `${Math.min(entropy * 20, 100)}%`, // entropie → %
+                                        backgroundColor: getPasswordStrength(entropy).color,
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {entropy !== null && (
+                            <p className="strengthLabel">{getPasswordStrength(entropy).level}</p>
                         )}
                     </div>
 
-                    {error && <p style={{color: "red"}}>{error}</p>}
 
-                    <button type="submit">S'inscrire</button>
+                    <button className="btnSubmit" type="submit">Create account</button>
                 </form>
             </div>
         </div>
