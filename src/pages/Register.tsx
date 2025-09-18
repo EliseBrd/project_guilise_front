@@ -15,26 +15,29 @@ export default function Register() {
     // Fonction pour calculer l'entropie
     function calculerEntropie(chaine: string): number {
         if (!chaine || chaine.length === 0) {
-            console.log('⚠ Erreur : La chaîne est vide !');
             return 0;
         }
 
+        // 1️⃣ Taille de l'alphabet selon types de caractères
+        let alphabetSize = 0;
+        if (/[a-z]/.test(chaine)) alphabetSize += 26; // minuscules
+        if (/[A-Z]/.test(chaine)) alphabetSize += 26; // majuscules
+        if (/[0-9]/.test(chaine)) alphabetSize += 10; // chiffres
+        if (/[^a-zA-Z0-9]/.test(chaine)) alphabetSize += 33; // spéciaux
+
         const longueur = chaine.length;
-        const frequence = new Map(); // pour stocker les fréquences d’apparition des caractères
 
-        // Compter combien de fois chaque caractère apparaît
-        for (let c of chaine) {
-            frequence.set(c, (frequence.get(c) || 0) + 1);
+        // 2️⃣ Entropie théorique (bits)
+        let entropy = Math.log2(Math.pow(alphabetSize, longueur));
+
+        // 3️⃣ Pénalisation pour répétitions
+        const uniqueChars = new Set(chaine).size;
+        if (uniqueChars < longueur) {
+            const repetitionPenalty = longueur / uniqueChars; // plus c'est répétitif, plus la pénalité
+            entropy /= repetitionPenalty;
         }
 
-        // Calcul de l'entropie
-        let entropie = 0;
-        for (let [, count] of frequence) { // pour chaque caractère du map
-            let p = count / longueur; // probabilité p du caractère, Exemple : "l" apparaît 2 fois dans 5 caractères → p = 2/5 = 0.4
-            entropie += -p * Math.log2(p); // formule mathématique de Shannon & "-p" car On corrige le signe du log (pour que ce soit positif).
-        }
-
-        return entropie; // valeur en bits qui représente la quantité d’information : bits/caractère
+        return entropy;
     }
 
     // Lorsqu’on tape dans le mot de passe
@@ -52,10 +55,10 @@ export default function Register() {
     }
 
     function getPasswordStrength(entropy: number): { level: string, color: string } {
-        if (entropy < 2) return {level: "Faible", color: "red"};
-        if (entropy < 3.5) return {level: "Moyen", color: "orange"};
-        if (entropy < 4.5) return {level: "Bon", color: "green"};
-        return {level: "Excellent", color: "darkgreen"};
+        if (entropy < 28) return { level: "Faible", color: "red" };        // < 2^28 combinaisons ≈ faible
+        if (entropy < 36) return { level: "Moyen", color: "orange" };      // < 2^36 combinaisons ≈ moyenne
+        if (entropy < 60) return { level: "Bon", color: "green" };         // < 2^60 combinaisons ≈ bonne
+        return { level: "Excellent", color: "darkgreen" };                // ≥ 2^60 combinaisons ≈ très forte
     }
 
     return (
@@ -125,7 +128,7 @@ export default function Register() {
                                 <div
                                     className="strengthBar"
                                     style={{
-                                        width: `${Math.min(entropy * 20, 100)}%`, // entropie → %
+                                        width: `${Math.min((entropy / 70) * 100, 100)}%`,
                                         backgroundColor: getPasswordStrength(entropy).color,
                                     }}
                                 />
