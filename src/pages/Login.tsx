@@ -1,6 +1,7 @@
 import {useState} from "react";
 import "./Register.scss";
 import {useNavigate} from "react-router-dom";
+import {motion} from "framer-motion";
 import Logo from "../assets/logo.svg";
 import EyeOpen from "../assets/eye.svg";
 import EyeClosed from "../assets/eye-closed.svg";
@@ -24,13 +25,27 @@ export default function Login() {
         // TODO: appeler le backend pour envoyer la connexion
     }
 
+    const fadeSlideLeft = {
+        hidden: { opacity: 0, x: -20 }, // départ à gauche et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } }, // arrive à sa position
+    };
+
+    const fadeSlideRight = {
+        hidden: { opacity: 0, x: 20 }, // départ à droite et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } },
+    };
+
     return (
-        <div className="registerContainer">
-            <div className="left">
+        <motion.div
+            className="registerContainer"
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div className="left" variants={fadeSlideLeft}>
                 <img className="logoApp" src={Logo} alt="Logo"/>
                 <p className="slogan">Protecting access, securing trust</p>
-            </div>
-            <div className="right">
+            </motion.div>
+            <motion.div className="right" variants={fadeSlideRight}>
                 <h2>Log in an account</h2>
                 <div className="alreadyAccount">
                     <p>You do not have an account ?</p>
@@ -71,7 +86,7 @@ export default function Login() {
 
                     <button className="btnSubmit" type="submit">Create account</button>
                 </form>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

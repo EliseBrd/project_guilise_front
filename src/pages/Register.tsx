@@ -1,6 +1,7 @@
 import {useState} from "react";
 import "./Register.scss";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {motion} from "framer-motion";
 import Logo from "../assets/logo.svg";
 import EyeOpen from "../assets/eye.svg";
 import EyeClosed from "../assets/eye-closed.svg";
@@ -57,26 +58,40 @@ export default function Register() {
     }
 
     function getPasswordStrength(entropy: number): { level: string, color: string } {
-        if (entropy < 28) return { level: "Faible", color: "red" };        // < 2^28 combinaisons ≈ faible
-        if (entropy < 36) return { level: "Moyen", color: "orange" };      // < 2^36 combinaisons ≈ moyenne
-        if (entropy < 60) return { level: "Bon", color: "green" };         // < 2^60 combinaisons ≈ bonne
-        return { level: "Excellent", color: "darkgreen" };                // ≥ 2^60 combinaisons ≈ très forte
+        if (entropy < 28) return {level: "Faible", color: "red"};        // < 2^28 combinaisons ≈ faible
+        if (entropy < 36) return {level: "Moyen", color: "orange"};      // < 2^36 combinaisons ≈ moyenne
+        if (entropy < 60) return {level: "Bon", color: "green"};         // < 2^60 combinaisons ≈ bonne
+        return {level: "Excellent", color: "darkgreen"};                // ≥ 2^60 combinaisons ≈ très forte
     }
 
+    const fadeSlideLeft = {
+        hidden: { opacity: 0, x: -20 }, // départ à gauche et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } }, // arrive à sa position
+    };
+
+    const fadeSlideRight = {
+        hidden: { opacity: 0, x: 20 }, // départ à droite et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } },
+    };
+
     return (
-        <div className="registerContainer">
-            <div className="left">
+        <motion.div
+            className="registerContainer"
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div className="left" variants={fadeSlideLeft}>
                 <img className="logoApp" src={Logo} alt="Logo"/>
                 <p className="slogan">Protecting access, securing trust</p>
-            </div>
-            <div className="right">
+            </motion.div>
+            <motion.div className="right" variants={fadeSlideRight}>
                 <h2>Create an account</h2>
                 <div className="alreadyAccount">
                     <p>Already have an account ?</p>
                     <a className="link" onClick={() => navigate("/login")}>Log in</a>
                 </div>
                 <form onSubmit={handleSubmit}>
-                <div className="nameFields">
+                    <div className="nameFields">
                         <input
                             className="inputFirstname"
                             placeholder="Lastname"
@@ -145,7 +160,7 @@ export default function Register() {
 
                     <button className="btnSubmit" type="submit">Create account</button>
                 </form>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }
