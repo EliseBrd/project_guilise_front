@@ -1,5 +1,6 @@
 import {useState} from "react";
 import "./Register.scss";
+import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import EyeOpen from "../assets/eye.svg";
 import EyeClosed from "../assets/eye-closed.svg";
@@ -11,6 +12,7 @@ export default function Register() {
     const [password, setPassword] = useState("");
     const [entropy, setEntropy] = useState<number | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     // Fonction pour calculer l'entropie
     function calculerEntropie(chaine: string): number {
@@ -71,10 +73,10 @@ export default function Register() {
                 <h2>Create an account</h2>
                 <div className="alreadyAccount">
                     <p>Already have an account ?</p>
-                    <a className="link">Log in</a>
+                    <a className="link" onClick={() => navigate("/login")}>Log in</a>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <div className="nameFields">
+                <div className="nameFields">
                         <input
                             className="inputFirstname"
                             placeholder="Lastname"
