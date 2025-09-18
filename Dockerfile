@@ -2,6 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
+# Copier juste package.json et package-lock.json pour installer les deps
 COPY package*.json ./
 RUN npm install
 

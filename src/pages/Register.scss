@@ -1,0 +1,75 @@
+// Register.scss
+.registerContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 40px;
+  width: 100%;
+  padding: 30px;
+  background-color: #2C2638;
+  height: 100vh;
+
+  .left {
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    background: url("../assets/register.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+
+
+    .logoApp {
+      filter: invert(1);
+      position: absolute;
+      top: 0;
+      width: 80px;
+      padding: 20px;
+    }
+
+    .slogan {
+      position: absolute;
+      bottom: 40px;
+      color: white;
+      font-size: 30px;
+      text-align: center;
+      left: 50%;
+      transform: translateX(-50%);
+      text-transform: capitalize;
+    }
+  }
+
+
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+}
