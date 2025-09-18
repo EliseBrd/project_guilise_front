@@ -38,38 +38,141 @@
     }
   }
 
+  .right {
+    color: white;
+    padding: 20px 40px;
 
-  h2 {
-    text-align: center;
-    color: #333;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    input {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    h2 {
+      font-size: 50px;
+      font-weight: 300;
+      margin-bottom: 15px;
     }
 
-    button {
-      padding: 10px;
-      background-color: #007bff;
+    .alreadyAccount {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 50px;
+      font-weight: 100;
+      align-items: center;
+
+      .link {
+        cursor: pointer;
+        text-decoration: underline;
+        color: #6D54B5;
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      input {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background-color: #3C364C;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.2s ease;
+
+        &::placeholder {
+          color: #8E82B5;
+        }
+
+        &:focus {
+          border: 1px solid #6B5CA5;
+        }
+      }
+    }
+
+    .nameFields {
+      display: flex;
+      gap: 25px;
+
+      input {
+        flex: 1; // les deux champs prennent la même largeur
+      }
+    }
+
+    .passwordField {
+      position: relative;
+
+      .passwordInput {
+        position: relative;
+
+        .eye-icon {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 22px;
+          height: 22px;
+          cursor: pointer;
+          opacity: 0.8;
+          transition: opacity 0.2s;
+          filter: invert(1);
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+
+      .strengthMeter {
+        height: 6px;
+        border-radius: 4px;
+        background: #3b3355;
+        margin-top: 6px;
+        overflow: hidden;
+
+        .strengthBar {
+          height: 100%;
+          transition: width 0.3s ease;
+        }
+      }
+
+      .strengthLabel {
+        margin-top: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: right;
+      }
+    }
+
+    .btnSubmit {
+      margin-top: 30px;
+      padding: 15px 20px;
+      background-color: #6D54B5;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      transition: 0.3s ease-in-out;
 
       &:hover {
-        background-color: #0056b3;
+        background-color: #4b397f;
       }
     }
   }
-
-  p {
-    margin: 0;
-  }
 }
+
+
+//  form {
+//    display: flex;
+//    flex-direction: column;
+//    gap: 15px;
+//
+//    input {
+//      padding: 8px;
+//      border: 1px solid #ccc;
+//      border-radius: 4px;
+//    }
+//  }
+//
+//  p {
+//    margin: 0;
+//  }
+//}
