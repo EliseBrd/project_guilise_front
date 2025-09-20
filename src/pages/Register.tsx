@@ -1,5 +1,6 @@
-import { useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import "./Register.scss";
+import {AuthContext } from "../Provider/AuthProvider";
 import Logo from "../assets/logo.svg";
 import {useNavigate} from "react-router-dom";
 import {motion} from "framer-motion";
@@ -16,7 +17,10 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+    const [, setSuccess] = useState("");
+
+    const auth = useContext(AuthContext);
+
 
     // Fonction pour calculer l'entropie
     function calculerEntropie(chaine: string): number {
@@ -53,6 +57,12 @@ export default function Register() {
         setPassword(inputChaine);
         setEntropy(calculerEntropie(inputChaine));
     }
+
+    useEffect(() => {
+        if (!auth?.loading && auth?.user) {
+            navigate("/dashboard");
+        }
+    }, [auth?.loading, auth?.user, navigate]);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
