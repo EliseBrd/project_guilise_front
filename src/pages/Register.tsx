@@ -1,6 +1,11 @@
 import { useState } from "react";
 import "./Register.scss";
 import Logo from "../assets/logo.svg";
+import {useNavigate} from "react-router-dom";
+import {motion} from "framer-motion";
+import EyeOpen from "../assets/eye.svg";
+import EyeClosed from "../assets/eye-closed.svg";
+
 
 export default function Register() {
     const [lastname, setLastname] = useState("");
@@ -8,15 +13,10 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [entropy, setEntropy] = useState<number | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-
-    // Lorsqu’on tape dans le mot de passe
-    function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const inputChaine = e.target.value;
-        setPassword(inputChaine);
-        setEntropy(calculerEntropie(inputChaine)); // Décommenter si tu veux calculer l'entropie
-    }
 
     // Fonction pour calculer l'entropie
     function calculerEntropie(chaine: string): number {
@@ -25,22 +25,33 @@ export default function Register() {
             return 0;
         }
 
+        // 1️⃣ Taille de l'alphabet selon types de caractères
+        let alphabetSize = 0;
+        if (/[a-z]/.test(chaine)) alphabetSize += 26; // minuscules
+        if (/[A-Z]/.test(chaine)) alphabetSize += 26; // majuscules
+        if (/[0-9]/.test(chaine)) alphabetSize += 10; // chiffres
+        if (/[^a-zA-Z0-9]/.test(chaine)) alphabetSize += 33; // spéciaux
+
         const longueur = chaine.length;
-        const frequence = new Map(); // pour stocker les fréquences d’apparition des caractères
 
-        // Compter combien de fois chaque caractère apparaît
-        for (const c of chaine) {
-            frequence.set(c, (frequence.get(c) || 0) + 1);
+        // 2️⃣ Entropie théorique (bits)
+        let entropy = Math.log2(Math.pow(alphabetSize, longueur));
+
+        // 3️⃣ Pénalisation pour répétitions
+        const uniqueChars = new Set(chaine).size;
+        if (uniqueChars < longueur) {
+            const repetitionPenalty = longueur / uniqueChars; // plus c'est répétitif, plus la pénalité
+            entropy /= repetitionPenalty;
         }
 
-        // Calcul de l'entropie
-        let entropie = 0;
-        for (const [, count] of frequence) { // pour chaque caractère du map
-            const p = count / longueur; // probabilité p du caractère, Exemple : "l" apparaît 2 fois dans 5 caractères → p = 2/5 = 0.4
-            entropie += -p * Math.log2(p); // formule mathématique de Shannon & "-p" car On corrige le signe du log (pour que ce soit positif).
-        }
+        return entropy;
+    }
 
-        return entropie; // valeur en bits qui représente la quantité d’information : bits/caractère
+    // Lorsqu’on tape dans le mot de passe
+    function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const inputChaine = e.target.value;
+        setPassword(inputChaine);
+        setEntropy(calculerEntropie(inputChaine));
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -87,68 +98,111 @@ export default function Register() {
         }
     }
 
+    function getPasswordStrength(entropy: number): { level: string, color: string } {
+        if (entropy < 28) return {level: "Faible", color: "red"};        // < 2^28 combinaisons ≈ faible
+        if (entropy < 36) return {level: "Moyen", color: "orange"};      // < 2^36 combinaisons ≈ moyenne
+        if (entropy < 60) return {level: "Bon", color: "green"};         // < 2^60 combinaisons ≈ bonne
+        return {level: "Excellent", color: "darkgreen"};                // ≥ 2^60 combinaisons ≈ très forte
+    }
+
+    const fadeSlideLeft = {
+        hidden: { opacity: 0, x: -20 }, // départ à gauche et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } }, // arrive à sa position
+    };
+
+    const fadeSlideRight = {
+        hidden: { opacity: 0, x: 20 }, // départ à droite et invisible
+        visible: { opacity: 1, x: 0, transition: { duration: 1 } },
+    };
+
     return (
-        <div className="registerContainer">
-            <div className="left">
-                <img className="logoApp" src={Logo} alt="Logo" />
+        <motion.div
+            className="registerContainer"
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div className="left" variants={fadeSlideLeft}>
+                <img className="logoApp" src={Logo} alt="Logo"/>
                 <p className="slogan">Protecting access, securing trust</p>
-            </div>
-            <div className="right">
+            </motion.div>
+            <motion.div className="right" variants={fadeSlideRight}>
                 <h2>Create an account</h2>
-                <div>
+                <div className="alreadyAccount">
                     <p>Already have an account ?</p>
-                    <button>Login</button>
+                    <a className="link" onClick={() => navigate("/login")}>Log in</a>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <div>
-                        <div className="inputFirstname">
-                            <label>Nom</label>
-                            <input
-                                type="text"
-                                value={lastname}
-                                onChange={(e) => setLastname(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="inputLastname">
-                            <label>Prénom</label>
-                            <input
-                                type="text"
-                                value={firstname}
-                                onChange={(e) => setFirstname(e.target.value)}
-                                required
-                            />
-                        </div>
+                    <div className="nameFields">
+                        <input
+                            className="inputFirstname"
+                            placeholder="Lastname"
+                            type="text"
+                            value={lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                            required
+                        />
+                        <input
+                            className="inputLastname"
+                            placeholder="Firstname"
+                            type="text"
+                            value={firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                            required
+                        />
                     </div>
                     <div className="inputMail">
-                        <label>Email</label>
                         <input
-                            type="email"
+                            className="email"
+                            placeholder="Email"
+                            type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
 
-                    <div>
-                        <label>Mot de passe :</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
-                        />
+                    <div className="passwordField">
+                        <div className="passwordInput">
+                            <input
+                                className="password"
+                                placeholder="Password"
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={handlePasswordChange}
+                                required
+                            />
+
+                            <img
+                                src={showPassword ? EyeOpen : EyeClosed}
+                                alt="Toggle password visibility"
+                                className="eye-icon"
+                                onClick={() => setShowPassword(!showPassword)}
+                            />
+                        </div>
+
+                    {error && <p style={{color: "red"}}>{error}</p>}
+
                         {entropy !== null && (
-                            <p>🔑 Entropie : {entropy.toFixed(2)} bits</p>
+                            <div className="strengthMeter">
+                                <div
+                                    className="strengthBar"
+                                    style={{
+                                        width: `${Math.min((entropy / 70) * 100, 100)}%`,
+                                        backgroundColor: getPasswordStrength(entropy).color,
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {entropy !== null && (
+                            <p className="strengthLabel">{getPasswordStrength(entropy).level}</p>
                         )}
                     </div>
 
-                    {error && <p style={{ color: "red" }}>{error}</p>}
-                    {success && <p style={{ color: "green" }}>{success}</p>}
 
-                    <button type="submit">S'inscrire</button>
+                    <button className="btnSubmit" type="submit">Create account</button>
                 </form>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }
