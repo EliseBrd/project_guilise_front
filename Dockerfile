@@ -2,15 +2,17 @@ FROM node:20
 
 WORKDIR /app
 
-# Copier juste package.json et package-lock.json pour installer les deps
+# Copier package.json et package-lock.json pour installer les deps
 COPY package*.json ./
+
+# Installer les dépendances
 RUN npm install
 
+# Copier le reste du code
 COPY . .
 
-# Build pour production
-RUN npm run build
-
-# Exposer Vite dev server (si tu veux le mode dev)
+# Exposer le port Vite
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+
+# Lancer le dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
