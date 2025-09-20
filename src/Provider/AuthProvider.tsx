@@ -9,6 +9,8 @@ interface AuthContextType {
     logout: () => Promise<void>;
 }
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
@@ -21,7 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/api/profile', { withCredentials: true });
+            const res = await axios.get(apiUrl + '/api/profile', { withCredentials: true });
             setUser(res.data);
         } catch (err) {
             setUser(null);
@@ -35,12 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, []);
 
     const login = async (email: string, password: string) => {
-        await axios.post('http://localhost:8000/api/login', { email, password }, { withCredentials: true });
+        await axios.post(apiUrl + '/api/login', { email, password }, { withCredentials: true });
         await fetchUser();
     };
 
     const logout = async () => {
-        await axios.post('http://localhost:8000/api/logout', {}, { withCredentials: true });
+        await axios.post(apiUrl + '/api/logout', {}, { withCredentials: true });
         setUser(null);
     };
 

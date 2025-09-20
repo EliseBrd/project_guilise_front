@@ -20,6 +20,7 @@ export default function Register() {
     const [, setSuccess] = useState("");
 
     const auth = useContext(AuthContext);
+    const apiUrl = import.meta.env.VITE_API_URL;
 
 
     // Fonction pour calculer l'entropie
@@ -76,7 +77,7 @@ export default function Register() {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:8000/api/register", {
+            const response = await fetch(apiUrl + "/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
