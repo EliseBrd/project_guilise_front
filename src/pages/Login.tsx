@@ -47,6 +47,10 @@ export default function Login() {
             </motion.div>
             <motion.div className="right" variants={fadeSlideRight}>
                 <h2>Log in an account</h2>
+                <div className="alreadyAccount">
+                    <p>You don't have an account ?</p>
+                    <a className="link" onClick={() => navigate("/register")}>Register</a>
+                </div>
                 <form onSubmit={handleSubmit}>
                     <input
                         placeholder="Email"
@@ -55,21 +59,26 @@ export default function Login() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                    <div className="passwordInput">
-                        <input
-                            placeholder="Password"
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            onChange={handlePasswordChange}
-                            required
-                        />
-                        <img
-                            src={showPassword ? EyeOpen : EyeClosed}
-                            alt="Toggle password visibility"
-                            onClick={() => setShowPassword(!showPassword)}
-                        />
+                    <div className="passwordField">
+                        <div className="passwordInput">
+                            <input
+                                className="password"
+                                placeholder="Password"
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={handlePasswordChange}
+                                required
+                            />
+
+                            <img
+                                src={showPassword ? EyeOpen : EyeClosed}
+                                alt="Toggle password visibility"
+                                className="eye-icon"
+                                onClick={() => setShowPassword(!showPassword)}
+                            />
+                        </div>
                     </div>
-                    <button type="submit">Login</button>
+                    <button className="btnSubmit" type="submit">Login</button>
                 </form>
             </motion.div>
         </motion.div>
